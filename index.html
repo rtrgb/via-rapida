@@ -9,10 +9,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@600;800;900&display=swap">
 <style>
-/* Layout: barra do protótipo + "palco" com telas públicas em moldura de celular e telas do vendedor em largura de desktop. Tema único claro: superfícies brancas, amarelo de placa só nos destaques. */
+/* Layout: barra do protótipo + "palco" com telas públicas em moldura de celular e telas do vendedor em largura de desktop. Tema único claro: azul e branco, escolhidos pela proprietária. */
 :root {
-  --sign: #F2B705;      /* amarelo de placa */
-  --sign-ink: #1D1F23;  /* texto sobre amarelo */
+  --sign: #1F5FBF;      /* azul da marca */
+  --sign-ink: #FFFFFF;  /* texto sobre azul */
+  --sign-soft: #E8F0FB; /* azul bem claro */
   --asphalt: #2B2F35;   /* texto forte */
   --soft: #F6F6F3;      /* superfícies claras secundárias */
   --chip: #EEEFEC;
@@ -108,7 +109,7 @@ input[type=text], input[type=email], input[type=password], input[type=time], inp
 .choice { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
 .choice legend { font-weight: 700; margin-bottom: 4px; }
 .choice label { display: flex; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font-weight: 400; cursor: pointer; }
-.choice label:has(input:checked) { border-color: var(--sign); background: var(--warn-bg); }
+.choice label:has(input:checked) { border-color: var(--sign); background: var(--sign-soft); }
 .stepper { display: flex; align-items: center; gap: 0; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; }
 .stepper button { width: 48px; height: 48px; border: 0; background: var(--off-bg); color: var(--fg); font-size: 22px; cursor: pointer; }
 .stepper output { min-width: 56px; text-align: center; font-family: var(--display); font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
@@ -192,7 +193,7 @@ td.num { font-variant-numeric: tabular-nums; }
 
 <script>
 const S = { // estado compartilhado entre painel e página pública
-  on: true, lote: 120, vendidas: 68, reservadas: 12, prox: '15:30', at: '14:05', limite: 15, reserva: null,
+  on: true, lote: 45, vendidas: 18, reservadas: 6, prox: '14:00', at: '08:10', limite: 10, reserva: null,
 };
 const disp = () => Math.max(0, S.lote - S.vendidas - S.reservadas);
 const SCREENS = [
@@ -236,7 +237,7 @@ const V = {
     <div class="info">
       <div><span>Horário</span><strong>Todo dia, 6h às 22h</strong></div>
       <div><span>Endereço</span><span style="text-align:right">Rua 1400, 429, Balneário Camboriú<br><span class="small">Em frente à Paróquia Santa Inês</span></span></div>
-      <div><span>WhatsApp</span><strong>(47) 9____-____ <span class="todo">a confirmar</span></strong></div>
+      <div><span>WhatsApp</span><strong>(47) 98404-7570</strong></div>
     </div>
     <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=Rua+1400+429+Balne%C3%A1rio+Cambori%C3%BA" target="_blank" rel="noopener">Como chegar</a>
   </div></div>`,
@@ -269,7 +270,7 @@ const V = {
         <label for="l2"><input type="radio" name="lote" id="l2" value="prox" ${disp() > 0 && S.on ? '' : 'checked'}>Próxima · ${esc(S.prox)}</label>
       </fieldset>
       <div style="display:grid;gap:4px"><span style="font-weight:700">Quantidade</span>
-        <div class="stepper"><button type="button" id="m4" aria-label="Diminuir">−</button><output id="q4">6</output><button type="button" id="p4" aria-label="Aumentar">+</button></div></div>
+        <div class="stepper"><button type="button" id="m4" aria-label="Diminuir">−</button><output id="q4">4</output><button type="button" id="p4" aria-label="Aumentar">+</button></div></div>
       <label for="n4">Nome<input id="n4" type="text" autocomplete="name" required></label>
       <label for="c4">E-mail ou telefone<input id="c4" type="text" autocomplete="email" required></label>
       <p class="small" id="err4" role="alert"></p>
@@ -278,13 +279,13 @@ const V = {
     </form>
   </div></div>`,
 
-  t05: () => { const r = S.reserva || { code: 'VR-0427', q: 6, lote: 'prox', nome: 'Maria' };
+  t05: () => { const r = S.reserva || { code: 'VR-0427', q: 4, lote: 'prox', nome: 'Maria' };
     return `<div class="phone">${head()}<div class="pad">
     <div class="success"><strong>Reservado, ${esc(r.nome)}.</strong><span>Mostre no caixa:</span><span class="code">${r.code}</span></div>
     <div class="info">
       <div><span>Quantidade</span><strong>${r.q}</strong></div>
       <div><span>Fornada</span><strong>${r.lote === 'atual' ? 'Agora' : esc(S.prox)}</strong></div>
-      <div><span>Retire em até</span><strong>30 min <span class="todo">a definir</span></strong></div>
+      <div><span>Retire em até</span><strong>60 min</strong></div>
     </div>
     <button class="btn btn-ghost btn-block" data-go="t02">Voltar</button>
   </div></div>`; },
@@ -309,7 +310,7 @@ const V = {
       <dl class="stats"><div><dt>Feitos</dt><dd>${S.lote}</dd></div><div><dt>Vendidos</dt><dd>${S.vendidas}</dd></div><div><dt>Reservados</dt><dd>${S.reservadas}</dd></div><div class="hl"><dt>No balcão</dt><dd>${disp()}</dd></div></dl></div>
     <div class="grid2">
       <div class="panel"><h3>Vender</h3><div class="quick">${[1, 2, 5, 10].map(n => `<button data-sell="${n}">−${n}</button>`).join('')}</div></div>
-      <div class="panel"><h3>Nova fornada</h3><form class="inline" id="f7a"><label for="q7">Quantidade<input id="q7" type="number" min="1" value="120"></label><button class="btn btn-sign" type="submit">Pronta</button></form></div>
+      <div class="panel"><h3>Nova fornada</h3><form class="inline" id="f7a"><label for="q7">Quantidade<input id="q7" type="number" min="1" value="45"></label><button class="btn btn-sign" type="submit">Pronta</button></form></div>
       <div class="panel"><h3>Próxima fornada</h3><form class="inline" id="f7b"><label for="h7">Horário<input id="h7" type="time" value="${esc(S.prox)}"></label><button class="btn btn-ghost" type="submit">Salvar</button></form></div>
     </div>`),
 
@@ -337,15 +338,15 @@ const V = {
 };
 
 const RES = [
-  { c: 'VR-0421', n: 'Exemplo: Maria S.', q: 6, l: '06:30', s: 'Retirada' },
-  { c: 'VR-0423', n: 'Exemplo: João P.', q: 10, l: '10:00', s: 'Não retirada' },
-  { c: 'VR-0425', n: 'Exemplo: Ana L.', q: 4, l: '14:00', s: 'Aguardando' },
-  { c: 'VR-0426', n: 'Exemplo: Carlos M.', q: 8, l: '14:00', s: 'Aguardando' },
+  { c: 'VR-0421', n: 'Exemplo: Maria S.', q: 4, l: '07:30', s: 'Retirada' },
+  { c: 'VR-0423', n: 'Exemplo: João P.', q: 10, l: '07:30', s: 'Não retirada' },
+  { c: 'VR-0425', n: 'Exemplo: Ana L.', q: 3, l: '14:00', s: 'Aguardando' },
+  { c: 'VR-0426', n: 'Exemplo: Carlos M.', q: 6, l: '14:00', s: 'Aguardando' },
 ];
 const DAYS = ['Qui', 'Sex', 'Sáb', 'Dom', 'Seg', 'Ter', 'Qua'];
-const WEEK = [312, 348, 401, 287, 296, 305, 330]; const PREV = 2050;
-const HOURS = [58, 71, 64, 40, 22, 15, 12, 18, 38, 52, 61, 49, 30, 17, 9, 5]; // 6h a 21h
-const RET = 41, NRET = 6;
+const WEEK = [84, 88, 90, 72, 80, 86, 89]; const PREV = 552;
+const HOURS = [4, 16, 13, 6, 3, 2, 1, 2, 14, 12, 6, 3, 1, 1, 0, 0]; // média por dia, 6h a 21h
+const RET = 23, NRET = 3;
 
 function bars(vals, labels, peaks) {
   const max = Math.max(...vals); const top3 = [...vals].sort((a, b) => b - a).slice(0, 3);
@@ -373,8 +374,8 @@ function bind() {
     const ok = $('#n3').value.trim() && /\S+@\S+\.\S+/.test($('#e3').value) && $('#c3').checked;
     if (!ok) { $('#err3').textContent = 'Preencha nome, e-mail e o aceite.'; return; }
     $('#f3wrap').innerHTML = `<div class="success"><strong>Pronto, ${esc($('#n3').value.trim())}.</strong><span>Você recebe um e-mail quando sair pão.</span></div><button class="btn btn-ghost btn-block" data-go="t02" style="margin-top:14px">Voltar</button>`; });
-  const f4 = $('#f4'); if (f4) { let q = 6; const upd = () => $('#q4').textContent = q;
-    $('#m4').onclick = () => { q = Math.max(1, q - 1); upd(); }; $('#p4').onclick = () => { q = Math.min(20, q + 1); upd(); };
+  const f4 = $('#f4'); if (f4) { let q = 4; const upd = () => $('#q4').textContent = q;
+    $('#m4').onclick = () => { q = Math.max(1, q - 1); upd(); }; $('#p4').onclick = () => { q = Math.min(10, q + 1); upd(); };
     f4.addEventListener('submit', e => { e.preventDefault(); const lote = (f4.querySelector('input[name=lote]:checked') || {}).value;
       if (!$('#n4').value.trim() || !$('#c4').value.trim()) { $('#err4').textContent = 'Preencha nome e contato.'; return; }
       if (lote === 'atual' && q > disp()) { $('#err4').textContent = `Só há ${disp()} no balcão. Reserve menos ou da próxima fornada.`; return; }
