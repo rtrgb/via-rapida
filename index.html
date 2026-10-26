@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protótipo Via Rápida</title>
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@600;800;900&display=swap">
+<style>
+/* Layout: barra do protótipo + "palco" com telas públicas em moldura de celular e telas do vendedor em largura de desktop. Tema único claro: superfícies brancas, amarelo de placa só nos destaques. */
+:root {
+  --sign: #F2B705;      /* amarelo de placa */
+  --sign-ink: #1D1F23;  /* texto sobre amarelo */
+  --asphalt: #2B2F35;   /* texto forte */
+  --soft: #F6F6F3;      /* superfícies claras secundárias */
+  --chip: #EEEFEC;
+  --bg: #F3F2EE;        /* fundo do palco */
+  --surface: #FFFFFF;
+  --fg: #1D1F23;
+  --muted: #5C626B;
+  --line: #D9D7D0;
+  --ok: #1E7B45;  --ok-bg: #E3F3E8;
+  --off: #5C626B; --off-bg: #ECEDEF;
+  --warn: #8A5A00; --warn-bg: #FFF2CC;
+  --danger: #A3261B;
+  color-scheme: light;
+  --display: "Overpass", "Arial Narrow", Arial, sans-serif;
+  --body: "Atkinson Hyperlegible", Verdana, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
+button, input, select { font: inherit; }
+:focus-visible { outline: 3px solid var(--sign); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Barra do protótipo */
+.proto { background: var(--surface); color: var(--fg); border-bottom: 1px solid var(--line); padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.proto-in { max-width: 1100px; margin: 0 auto; display: grid; gap: 10px; }
+.proto-top { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.proto-top strong { font-family: var(--display); font-weight: 800; letter-spacing: .02em; }
+.proto-top span { color: var(--muted); font-size: 13px; }
+.groups { display: grid; gap: 8px; }
+.group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.group-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); min-width: 72px; }
+.tab { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; font-size: 14px; cursor: pointer; }
+.tab[aria-current="true"] { background: var(--sign); color: var(--sign-ink); border-color: var(--sign); font-weight: 700; }
+.tab .id { font-family: var(--display); font-weight: 800; margin-right: 4px; }
+
+.stage { padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.meta { max-width: 1100px; margin: 0 auto 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; color: var(--muted); font-size: 14px; }
+.meta b { color: var(--fg); font-family: var(--display); font-size: 18px; }
+.meta .reqs { font-variant-numeric: tabular-nums; }
+
+/* Moldura de celular para telas públicas */
+.phone { max-width: 390px; margin: 0 auto; background: var(--surface); border: 8px solid #E4E5E1; border-radius: 34px; overflow: hidden; min-height: 640px; box-shadow: 0 18px 40px -28px rgba(0,0,0,.25); }
+.desk { max-width: 1100px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+@media (max-width: 440px) { .phone { border-width: 0; border-radius: 12px; min-height: 0; } }
+
+/* Cabeçalho do site: placa */
+.site-head { background: var(--surface); border-bottom: 1px solid var(--line); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.plate { display: inline-flex; flex-direction: column; background: var(--sign); color: var(--sign-ink); border: 2px solid var(--sign-ink); outline: 2px solid var(--sign); border-radius: 6px; padding: 3px 10px 1px; font-family: var(--display); font-weight: 900; font-size: 20px; letter-spacing: .03em; line-height: 1; }
+.plate small { font-size: 9px; font-weight: 800; letter-spacing: .14em; padding-bottom: 3px; }
+.site-head a { color: var(--fg); font-size: 14px; }
+
+.pad { padding: 20px 18px; display: grid; gap: 18px; }
+.lead { font-size: 15px; color: var(--muted); margin: 0; }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; border-radius: 10px; border: 2px solid transparent; padding: 12px 16px; font-weight: 700; cursor: pointer; text-decoration: none; min-height: 48px; }
+.btn-sign { background: var(--sign); color: var(--sign-ink); }
+.btn-dark { background: var(--chip); color: var(--fg); border-color: var(--line); }
+.btn-ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn-block { width: 100%; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.row > * { flex: 1 1 140px; }
+
+/* Placa de status */
+.status { border-radius: 12px; padding: 16px; display: grid; gap: 6px; border: 2px solid; }
+.status.on { background: var(--ok-bg); border-color: var(--ok); }
+.status.off { background: var(--off-bg); border-color: var(--off); }
+.status-label { font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: .02em; display: flex; align-items: center; gap: 10px; }
+.status.on .status-label { color: var(--ok); }
+.status.off .status-label { color: var(--off); }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: currentColor; flex: none; }
+.status.on .dot { box-shadow: 0 0 0 0 currentColor; animation: pulse 2s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 10px transparent; } }
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kv div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.kv dt { font-size: 13px; color: var(--muted); }
+.kv dd { margin: 0; font-family: var(--display); font-weight: 800; font-size: 26px; font-variant-numeric: tabular-nums; }
+.small { font-size: 13px; color: var(--muted); }
+
+.info { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.info div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.info span:first-child { color: var(--muted); }
+.cats { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.cats li { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.photo { aspect-ratio: 16/9; max-width: 100%; border-radius: 10px; border: 2px dashed var(--line); display: grid; place-items: center; color: var(--muted); font-size: 14px; text-align: center; padding: 10px; background: repeating-linear-gradient(135deg, transparent 0 12px, var(--off-bg) 12px 24px); }
+.todo { background: var(--warn-bg); color: var(--warn); border-radius: 4px; padding: 0 4px; font-size: .9em; }
+
+/* Formulários */
+form { display: grid; gap: 14px; }
+label { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
+input[type=text], input[type=email], input[type=password], input[type=time], input[type=number], input[type=tel], select { width: 100%; min-height: 48px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--fg); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 14px; }
+.check input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.choice { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
+.choice legend { font-weight: 700; margin-bottom: 4px; }
+.choice label { display: flex; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 10px; padding: 10px 12px; font-weight: 400; cursor: pointer; }
+.choice label:has(input:checked) { border-color: var(--sign); background: var(--warn-bg); }
+.stepper { display: flex; align-items: center; gap: 0; border: 2px solid var(--line); border-radius: 10px; overflow: hidden; width: max-content; }
+.stepper button { width: 48px; height: 48px; border: 0; background: var(--off-bg); color: var(--fg); font-size: 22px; cursor: pointer; }
+.stepper output { min-width: 56px; text-align: center; font-family: var(--display); font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; }
+.back { background: none; border: 0; color: var(--fg); text-decoration: underline; cursor: pointer; padding: 0; justify-self: start; }
+.success { border: 2px solid var(--ok); background: var(--ok-bg); border-radius: 12px; padding: 16px; display: grid; gap: 8px; }
+.code { font-family: var(--display); font-weight: 900; font-size: 34px; letter-spacing: .06em; }
+
+/* Painel do vendedor */
+.app { display: grid; grid-template-columns: 210px 1fr; min-height: 560px; }
+@media (max-width: 760px) { .app { grid-template-columns: 1fr; } }
+.side { background: var(--soft); color: var(--fg); border-right: 1px solid var(--line); padding: 16px; display: grid; align-content: start; gap: 18px; }
+.side nav { display: grid; gap: 4px; }
+.side button { text-align: left; background: transparent; border: 0; color: var(--muted); padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+.side button[aria-current="true"] { background: var(--surface); color: var(--fg); font-weight: 700; box-shadow: inset 3px 0 0 var(--sign); }
+@media (max-width: 760px) { .side nav { grid-auto-flow: column; overflow-x: auto; } .side { gap: 10px; } }
+.main { padding: 22px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.main h2 { font-size: 26px; }
+.alert { display: flex; gap: 10px; align-items: center; background: var(--warn-bg); color: var(--warn); border-left: 6px solid var(--sign); padding: 12px 14px; border-radius: 6px; font-weight: 700; }
+.toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.toggle button { min-height: 92px; border-radius: 12px; border: 3px solid var(--line); background: var(--surface); color: var(--fg); font-family: var(--display); font-weight: 900; font-size: 22px; cursor: pointer; display: grid; place-items: center; gap: 2px; }
+.toggle button small { font-family: var(--body); font-weight: 400; font-size: 13px; color: var(--muted); }
+.toggle .t-on[aria-pressed="true"] { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+.toggle .t-off[aria-pressed="true"] { border-color: var(--off); background: var(--off-bg); color: var(--off); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.panel { border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px; align-content: start; }
+.panel h3 { font-size: 18px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 520px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+.stats div { display: grid; }
+.stats dt { font-size: 13px; color: var(--muted); }
+.stats dd { margin: 0; font-family: var(--display); font-weight: 800; font-size: 28px; font-variant-numeric: tabular-nums; }
+.stats .hl dd { color: var(--ok); }
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick button { min-width: 64px; min-height: 48px; border-radius: 10px; border: 2px solid var(--line); background: var(--surface); color: var(--fg); font-weight: 700; font-size: 18px; cursor: pointer; }
+.inline { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.inline label { flex: 1 1 140px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--surface); padding: 10px 16px; border-radius: 8px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 15px; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: 13px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+td.num { font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 700; }
+.p-wait { background: var(--warn-bg); color: var(--warn); }
+.p-ok { background: var(--ok-bg); color: var(--ok); }
+.p-no { background: var(--off-bg); color: var(--off); }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.acts button { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 14px; }
+
+/* Gráficos */
+.chart { display: grid; gap: 6px; }
+.bars { display: grid; align-items: end; gap: 6px; height: 180px; margin-top: 22px; border-bottom: 1px solid var(--muted); background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 25%; }
+.bar { background: #B9BDC3; border-radius: 4px 4px 0 0; position: relative; min-height: 2px; }
+.bar.peak { background: var(--sign); }
+.bar span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xl { display: grid; gap: 6px; font-size: 12px; color: var(--muted); text-align: center; }
+.sample { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--warn); background: var(--warn-bg); padding: 2px 8px; border-radius: 4px; justify-self: start; }
+.delta-up { color: var(--ok); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.split { display: flex; height: 26px; border-radius: 6px; overflow: hidden; }
+.split div { display: grid; place-items: center; color: #fff; font-size: 13px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+
+<header class="proto">
+  <div class="proto-in">
+    <div class="proto-top"><strong>Protótipo navegável · Via Rápida</strong><span>Dados de exemplo</span></div>
+    <div class="groups" id="tabs"></div>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="meta" id="meta"></div>
+  <div id="screen"></div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const S = { // estado compartilhado entre painel e página pública
+  on: true, lote: 120, vendidas: 68, reservadas: 12, prox: '15:30', at: '14:05', limite: 15, reserva: null,
+};
+const disp = () => Math.max(0, S.lote - S.vendidas - S.reservadas);
+const SCREENS = [
+  { id: 't01', g: 'Cliente', name: 'Página inicial', reqs: 'RF01, RNF01, RNF05' },
+  { id: 't02', g: 'Cliente', name: 'Tem pão?', reqs: 'RF02, RF03, RF04, RNF04' },
+  { id: 't03', g: 'Cliente', name: 'Aviso', reqs: 'RF05, RF06, RNF08' },
+  { id: 't04', g: 'Cliente', name: 'Reserva', reqs: 'RF08, RN05, RN06' },
+  { id: 't05', g: 'Cliente', name: 'Confirmação', reqs: 'RF09, RN07, RN08' },
+  { id: 't06', g: 'Vendedor', name: 'Login', reqs: 'RF10, RNF07' },
+  { id: 't07', g: 'Vendedor', name: 'Painel', reqs: 'RF11 a RF14, RF20, RNF06' },
+  { id: 't08', g: 'Vendedor', name: 'Reservas do dia', reqs: 'RF15' },
+  { id: 't09', g: 'Vendedor', name: 'Relatórios', reqs: 'RF16 a RF19, RF22' },
+];
+let cur = 't01';
+const $ = (s) => document.querySelector(s);
+const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function renderTabs() {
+  const groups = ['Cliente', 'Vendedor'];
+  $('#tabs').innerHTML = groups.map(g => `<div class="group"><span class="group-label">${g}</span>${SCREENS.filter(s => s.g === g).map(s => `<button class="tab" data-go="${s.id}" aria-current="${s.id === cur}"><span class="id">${s.id.toUpperCase()}</span>${s.name}</button>`).join('')}</div>`).join('');
+}
+function go(id) { cur = id; try { history.replaceState(null, '', '#' + id); } catch (e) {} render(); window.scrollTo({ top: 0 }); }
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); }
+function now() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+
+const head = () => `<div class="site-head"><span class="plate" aria-label="Via Rápida">VIA RÁPIDA<small>MERCADINHO</small></span><a href="#" data-go="t02">Tem pão?</a></div>`;
+const PROD = 'Pão francês';
+const statusBox = () => {
+  const on = S.on && disp() > 0;
+  return `<section class="status ${on ? 'on' : 'off'}" aria-live="polite">
+    <span class="status-label"><span class="dot"></span>${on ? 'TEM PÃO AGORA' : 'ACABOU'}</span>
+    <dl class="kv"><div><dt>No balcão</dt><dd>${on ? disp() : 0}</dd></div><div><dt>Próxima fornada</dt><dd>${esc(S.prox)}</dd></div></dl>
+    <span class="small">Atualizado às ${esc(S.at)}</span></section>`;
+};
+
+const V = {
+  t01: () => `<div class="phone">${head()}<div class="pad">
+    <h1 style="font-size:26px">${PROD}</h1>
+    ${statusBox()}
+    <div class="row"><button class="btn btn-sign" data-go="t03">Me avise</button><button class="btn btn-ghost" data-go="t04">Reservar</button></div>
+    <div class="info">
+      <div><span>Horário</span><strong>Todo dia, 6h às 22h</strong></div>
+      <div><span>Endereço</span><span style="text-align:right">Rua 1400, 429, Balneário Camboriú<br><span class="small">Em frente à Paróquia Santa Inês</span></span></div>
+      <div><span>WhatsApp</span><strong>(47) 9____-____ <span class="todo">a confirmar</span></strong></div>
+    </div>
+    <a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=Rua+1400+429+Balne%C3%A1rio+Cambori%C3%BA" target="_blank" rel="noopener">Como chegar</a>
+  </div></div>`,
+
+  t02: () => `<div class="phone">${head()}<div class="pad">
+    <h1 style="font-size:26px">${PROD}</h1>
+    ${statusBox()}
+    <button class="btn btn-sign btn-block" data-go="t03">Me avise quando sair</button>
+    <button class="btn btn-dark btn-block" data-go="t04">Reservar</button>
+  </div></div>`,
+
+  t03: () => `<div class="phone">${head()}<div class="pad">
+    <button class="back" data-go="t02">Voltar</button>
+    <h1 style="font-size:24px">Aviso por e-mail</h1>
+    <div id="f3wrap"><form id="f3" novalidate>
+      <label for="n3">Nome<input id="n3" type="text" autocomplete="given-name" required></label>
+      <label for="e3">E-mail<input id="e3" type="email" autocomplete="email" required></label>
+      <label class="check" for="c3"><input id="c3" type="checkbox" required>Aceito receber avisos por e-mail.</label>
+      <p class="small" id="err3" role="alert"></p>
+      <button class="btn btn-sign btn-block" type="submit">Me avise</button>
+    </form></div>
+  </div></div>`,
+
+  t04: () => `<div class="phone">${head()}<div class="pad">
+    <button class="back" data-go="t02">Voltar</button>
+    <h1 style="font-size:24px">Reservar</h1>
+    <form id="f4" novalidate>
+      <fieldset class="choice"><legend>Fornada</legend>
+        <label for="l1"><input type="radio" name="lote" id="l1" value="atual" ${disp() > 0 && S.on ? 'checked' : 'disabled'}>Agora · ${S.on ? disp() : 0} no balcão</label>
+        <label for="l2"><input type="radio" name="lote" id="l2" value="prox" ${disp() > 0 && S.on ? '' : 'checked'}>Próxima · ${esc(S.prox)}</label>
+      </fieldset>
+      <div style="display:grid;gap:4px"><span style="font-weight:700">Quantidade</span>
+        <div class="stepper"><button type="button" id="m4" aria-label="Diminuir">−</button><output id="q4">6</output><button type="button" id="p4" aria-label="Aumentar">+</button></div></div>
+      <label for="n4">Nome<input id="n4" type="text" autocomplete="name" required></label>
+      <label for="c4">E-mail ou telefone<input id="c4" type="text" autocomplete="email" required></label>
+      <p class="small" id="err4" role="alert"></p>
+      <button class="btn btn-sign btn-block" type="submit">Reservar</button>
+      <p class="small">Pague na retirada.</p>
+    </form>
+  </div></div>`,
+
+  t05: () => { const r = S.reserva || { code: 'VR-0427', q: 6, lote: 'prox', nome: 'Maria' };
+    return `<div class="phone">${head()}<div class="pad">
+    <div class="success"><strong>Reservado, ${esc(r.nome)}.</strong><span>Mostre no caixa:</span><span class="code">${r.code}</span></div>
+    <div class="info">
+      <div><span>Quantidade</span><strong>${r.q}</strong></div>
+      <div><span>Fornada</span><strong>${r.lote === 'atual' ? 'Agora' : esc(S.prox)}</strong></div>
+      <div><span>Retire em até</span><strong>30 min <span class="todo">a definir</span></strong></div>
+    </div>
+    <button class="btn btn-ghost btn-block" data-go="t02">Voltar</button>
+  </div></div>`; },
+
+  t06: () => `<div class="desk"><div class="pad" style="max-width:420px;margin:40px auto">
+    <span class="plate" style="justify-self:start">VIA RÁPIDA<small>PAINEL</small></span>
+    <form id="f6">
+      <label for="e6">E-mail<input id="e6" type="email" autocomplete="username" value="loja@viarapida.exemplo"></label>
+      <label for="s6">Senha<input id="s6" type="password" autocomplete="current-password" value="exemplo123"></label>
+      <button class="btn btn-sign btn-block" type="submit">Entrar</button>
+    </form>
+  </div></div>`,
+
+  t07: () => appShell('t07', `
+    <h2>${PROD}</h2>
+    ${disp() <= S.limite && S.on ? `<div class="alert" role="status">Acabando: ${disp()} no balcão.</div>` : ''}
+    <div class="toggle" role="group" aria-label="Situação do pão">
+      <button class="t-on" id="ton" aria-pressed="${S.on}">TEM PÃO</button>
+      <button class="t-off" id="toff" aria-pressed="${!S.on}">ACABOU</button>
+    </div>
+    <div class="panel"><h3>Fornada atual</h3>
+      <dl class="stats"><div><dt>Feitos</dt><dd>${S.lote}</dd></div><div><dt>Vendidos</dt><dd>${S.vendidas}</dd></div><div><dt>Reservados</dt><dd>${S.reservadas}</dd></div><div class="hl"><dt>No balcão</dt><dd>${disp()}</dd></div></dl></div>
+    <div class="grid2">
+      <div class="panel"><h3>Vender</h3><div class="quick">${[1, 2, 5, 10].map(n => `<button data-sell="${n}">−${n}</button>`).join('')}</div></div>
+      <div class="panel"><h3>Nova fornada</h3><form class="inline" id="f7a"><label for="q7">Quantidade<input id="q7" type="number" min="1" value="120"></label><button class="btn btn-sign" type="submit">Pronta</button></form></div>
+      <div class="panel"><h3>Próxima fornada</h3><form class="inline" id="f7b"><label for="h7">Horário<input id="h7" type="time" value="${esc(S.prox)}"></label><button class="btn btn-ghost" type="submit">Salvar</button></form></div>
+    </div>`),
+
+  t08: () => appShell('t08', `
+    <h2>Reservas de hoje</h2>
+    <div class="tablewrap"><table><thead><tr><th>Código</th><th>Nome</th><th>Qtd.</th><th>Lote</th><th>Situação</th><th>Ação</th></tr></thead><tbody>
+    ${RES.map((r, i) => `<tr><td class="num">${r.c}</td><td>${esc(r.n)}</td><td class="num">${r.q}</td><td>${r.l}</td><td><span class="pill ${r.s === 'Aguardando' ? 'p-wait' : r.s === 'Retirada' ? 'p-ok' : 'p-no'}">${r.s}</span></td>
+    <td>${r.s === 'Aguardando' ? `<div class="acts"><button data-res="${i}" data-st="Retirada">Retirada</button><button data-res="${i}" data-st="Não retirada">Não retirada</button><button data-res="${i}" data-st="Cancelada">Cancelar</button></div>` : '<span class="small">feito</span>'}</td></tr>`).join('')}
+    </tbody></table></div>
+    `),
+
+  t09: () => appShell('t09', `
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:end;justify-content:space-between"><h2>Relatórios</h2>
+      <label for="per" style="font-weight:400">Período<select id="per"><option>Últimos 7 dias</option><option>Últimos 30 dias</option></select></label></div>
+    <span class="sample">Dados de exemplo</span>
+    <dl class="stats panel"><div><dt>Vendidas na semana</dt><dd>${WEEK.reduce((a, b) => a + b, 0)}</dd></div><div><dt>Média por dia</dt><dd>${Math.round(WEEK.reduce((a, b) => a + b, 0) / 7)}</dd></div><div class="hl"><dt>vs. semana anterior</dt><dd class="delta-up">+${Math.round((WEEK.reduce((a, b) => a + b, 0) / PREV - 1) * 100)}%</dd></div><div><dt>Reservas retiradas</dt><dd>${Math.round(RET / (RET + NRET) * 100)}%</dd></div></dl>
+    <div class="grid2">
+      <div class="panel chart"><h3>Vendas por dia</h3>${bars(WEEK, DAYS)}</div>
+      <div class="panel chart"><h3>Horários de pico</h3>${bars(HOURS, HOURS.map((_, i) => (6 + i)), true)}<div class="legend"><span><i style="background:var(--sign)"></i>3 faixas com mais vendas</span></div></div>
+    </div>
+    <div class="panel"><h3>Reservas da semana</h3>
+      <div class="split"><div style="flex:${RET};background:var(--ok)">${RET} retiradas</div><div style="flex:${NRET};background:var(--off)">${NRET}</div></div>
+      <div class="legend"><span><i style="background:var(--ok)"></i>Retiradas</span><span><i style="background:var(--off)"></i>Não retiradas</span></div></div>
+    <div><button class="btn btn-ghost" id="csv">Exportar CSV</button></div>`),
+};
+
+const RES = [
+  { c: 'VR-0421', n: 'Exemplo: Maria S.', q: 6, l: '06:30', s: 'Retirada' },
+  { c: 'VR-0423', n: 'Exemplo: João P.', q: 10, l: '10:00', s: 'Não retirada' },
+  { c: 'VR-0425', n: 'Exemplo: Ana L.', q: 4, l: '14:00', s: 'Aguardando' },
+  { c: 'VR-0426', n: 'Exemplo: Carlos M.', q: 8, l: '14:00', s: 'Aguardando' },
+];
+const DAYS = ['Qui', 'Sex', 'Sáb', 'Dom', 'Seg', 'Ter', 'Qua'];
+const WEEK = [312, 348, 401, 287, 296, 305, 330]; const PREV = 2050;
+const HOURS = [58, 71, 64, 40, 22, 15, 12, 18, 38, 52, 61, 49, 30, 17, 9, 5]; // 6h a 21h
+const RET = 41, NRET = 6;
+
+function bars(vals, labels, peaks) {
+  const max = Math.max(...vals); const top3 = [...vals].sort((a, b) => b - a).slice(0, 3);
+  const cols = `grid-template-columns:repeat(${vals.length},1fr)`;
+  return `<div class="bars" style="${cols}" role="img" aria-label="${labels.map((l, i) => l + ': ' + vals[i]).join(', ')}">${vals.map((v, i) => `<div class="bar ${peaks && top3.includes(v) ? 'peak' : ''}" style="height:${(v / max) * 100}%">${vals.length <= 8 ? `<span>${v}</span>` : ''}</div>`).join('')}</div>
+  <div class="xl" style="${cols}">${labels.map(l => `<span>${peaks ? l + 'h' : l}</span>`).join('')}</div>`;
+}
+function appShell(id, inner) {
+  const items = [['t07', 'Painel'], ['t08', 'Reservas do dia'], ['t09', 'Relatórios']];
+  return `<div class="desk"><div class="app"><aside class="side"><span class="plate" style="justify-self:start">VIA RÁPIDA<small>VENDEDOR</small></span>
+  <nav aria-label="Painel">${items.map(([k, n]) => `<button data-go="${k}" aria-current="${k === id}">${n}</button>`).join('')}<button data-go="t06">Sair</button></nav></aside>
+  <section class="main">${inner}</section></div></div>`;
+}
+
+function render() {
+  renderTabs();
+  const s = SCREENS.find(x => x.id === cur);
+  $('#meta').innerHTML = `<b>${s.id.toUpperCase()} ${s.name}</b><span class="reqs">Requisitos: ${s.reqs}</span><span>${s.g === 'Cliente' ? 'Celular (cliente)' : 'Computador do caixa'}</span>`;
+  $('#screen').innerHTML = V[cur]();
+  bind();
+}
+
+function bind() {
+  const f3 = $('#f3'); if (f3) f3.addEventListener('submit', e => { e.preventDefault();
+    const ok = $('#n3').value.trim() && /\S+@\S+\.\S+/.test($('#e3').value) && $('#c3').checked;
+    if (!ok) { $('#err3').textContent = 'Preencha nome, e-mail e o aceite.'; return; }
+    $('#f3wrap').innerHTML = `<div class="success"><strong>Pronto, ${esc($('#n3').value.trim())}.</strong><span>Você recebe um e-mail quando sair pão.</span></div><button class="btn btn-ghost btn-block" data-go="t02" style="margin-top:14px">Voltar</button>`; });
+  const f4 = $('#f4'); if (f4) { let q = 6; const upd = () => $('#q4').textContent = q;
+    $('#m4').onclick = () => { q = Math.max(1, q - 1); upd(); }; $('#p4').onclick = () => { q = Math.min(20, q + 1); upd(); };
+    f4.addEventListener('submit', e => { e.preventDefault(); const lote = (f4.querySelector('input[name=lote]:checked') || {}).value;
+      if (!$('#n4').value.trim() || !$('#c4').value.trim()) { $('#err4').textContent = 'Preencha nome e contato.'; return; }
+      if (lote === 'atual' && q > disp()) { $('#err4').textContent = `Só há ${disp()} no balcão. Reserve menos ou da próxima fornada.`; return; }
+      if (lote === 'atual') S.reservadas += q;
+      S.reserva = { code: 'VR-0' + (427 + Math.floor(Math.random() * 60)), q, lote, nome: $('#n4').value.trim().split(' ')[0] }; go('t05'); }); }
+  const f6 = $('#f6'); if (f6) f6.addEventListener('submit', e => { e.preventDefault(); go('t07'); });
+  const ton = $('#ton'); if (ton) { ton.onclick = () => { S.on = true; S.at = now(); render(); toast('Tem pão. Inscritos avisados.'); };
+    $('#toff').onclick = () => { S.on = false; S.at = now(); render(); toast('Marcado como acabou.'); }; }
+  document.querySelectorAll('[data-sell]').forEach(b => b.onclick = () => { const n = +b.dataset.sell; if (disp() < n) { toast('Não há unidades suficientes no balcão.'); return; } S.vendidas += n; S.at = now(); if (disp() === 0) S.on = false; render(); toast(`Venda de ${n} registrada.`); });
+  const f7a = $('#f7a'); if (f7a) f7a.addEventListener('submit', e => { e.preventDefault(); const q = +$('#q7').value; if (!(q > 0)) return; S.lote = q; S.vendidas = 0; S.reservadas = 0; S.on = true; S.at = now(); render(); toast(`Fornada de ${q} pronta. Inscritos avisados.`); });
+  const f7b = $('#f7b'); if (f7b) f7b.addEventListener('submit', e => { e.preventDefault(); S.prox = $('#h7').value || S.prox; S.at = now(); render(); toast('Horário salvo.'); });
+  document.querySelectorAll('[data-res]').forEach(b => b.onclick = () => { RES[+b.dataset.res].s = b.dataset.st; render(); toast('Reserva atualizada.'); });
+  const csv = $('#csv'); if (csv) csv.onclick = () => toast('Na versão final, baixa um arquivo CSV.');
+}
+
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); go(g.dataset.go); } });
+const h = (location.hash || '').slice(1); if (SCREENS.some(s => s.id === h)) cur = h;
+render();
+</script>
+
+</body>
+</html>
